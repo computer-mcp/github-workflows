@@ -46,6 +46,16 @@ class OrganizationTests(unittest.TestCase):
         self.assertEqual(status, 0)
         self.assertIn(REVISION + " (offline fixture)", output.getvalue())
 
+    def test_membership_scope_skips_settings_reads(self):
+        output = io.StringIO()
+        with redirect_stdout(output), patch.object(settings, "check", side_effect=AssertionError("settings read")):
+            code = organization.main(["--mode", "offline", "--declaration-root", str(STANDARD),
+                                      "--declaration-revision", REVISION, "--fixture", str(FIXTURE),
+                                      "--scope", "membership"])
+        self.assertEqual(code, 0)
+        self.assertIn("PASS organization membership and About", output.getvalue())
+        self.assertNotIn("declared settings", output.getvalue())
+
     def test_online_missing_catalog_fails_clearly_before_api(self):
         with tempfile.TemporaryDirectory() as directory:
             Path(directory, "MAINTENANCE.md").write_text((STANDARD / "MAINTENANCE.md").read_text())

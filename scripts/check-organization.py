@@ -65,6 +65,8 @@ def main(argv=None):
     parser.add_argument("--organization", default="computer-mcp")
     parser.add_argument("--mode", choices=("offline", "online"), default="online")
     parser.add_argument("--fixture", type=Path)
+    parser.add_argument("--scope", choices=("membership", "full"), default="full",
+                        help="membership checks inventory and About; full adds declared settings")
     args = parser.parse_args(argv)
     try:
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9-]*", args.organization):
@@ -77,11 +79,12 @@ def main(argv=None):
         api = Fixture(args.fixture) if args.fixture else GitHub()
         repositories = api.collection(f"orgs/{args.organization}/repos?type=all")
         findings = membership(entries, repositories)
-        findings += settings.check(api, args.organization, expected, repositories)
+        if args.scope == "full":
+            findings += settings.check(api, args.organization, expected, repositories)
         for finding in findings:
             print(" ".join(finding.splitlines()))
         if not findings:
-            print("PASS organization membership, About and declared settings")
+            print("PASS organization membership and About" + (" and declared settings" if args.scope == "full" else ""))
         return 2 if any(f.startswith("UNKNOWN ") for f in findings) else int(bool(findings))
     except Unavailable as error:
         print("UNKNOWN organization: " + str(error))

@@ -10,6 +10,10 @@ on:
         description: online reads GitHub; offline checks the bundled fixture
         type: string
         default: online
+      scope:
+        description: membership checks inventory and About; full adds declared settings
+        type: string
+        default: full
     secrets:
       organization-token:
         description: Read access to organization/member settings, Apps and credential names
@@ -38,10 +42,12 @@ jobs:
         env:
           REVISION: ${{ inputs.declaration-revision }}
           MODE: ${{ inputs.mode }}
+          SCOPE: ${{ inputs.scope }}
         shell: bash
         run: |
           [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]
           [[ "$MODE" == online || "$MODE" == offline ]]
+          [[ "$SCOPE" == membership || "$SCOPE" == full ]]
       - if: inputs.mode == 'online'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -54,13 +60,14 @@ jobs:
           GH_TOKEN: ${{ secrets.organization-token || github.token }}
           DECLARATION_REVISION: ${{ inputs.declaration-revision }}
           MODE: ${{ inputs.mode }}
+          SCOPE: ${{ inputs.scope }}
         shell: bash
         run: |
           if [[ "$MODE" == offline ]]; then
             python3 -I .shared/scripts/check-organization.py --mode offline \
               --declaration-root .shared/fixtures/declaration --declaration-revision "$DECLARATION_REVISION" \
-              --fixture .shared/fixtures/organization.json
+              --fixture .shared/fixtures/organization.json --scope "$SCOPE"
           else
             python3 -I .shared/scripts/check-organization.py --mode online \
-              --declaration-root declaration --declaration-revision "$DECLARATION_REVISION"
+              --declaration-root declaration --declaration-revision "$DECLARATION_REVISION" --scope "$SCOPE"
           fi
