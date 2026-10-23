@@ -1,0 +1,33 @@
+name: Notify official plugin catalog
+description: Request a complete central catalog reconciliation and return its accepted run.
+inputs:
+  client-id:
+    description: Client ID of the organization's Computer MCP Release Notifier GitHub App.
+    required: true
+  private-key:
+    description:
+      Release Notifier App private key supplied from the authorized sender's Actions secret.
+    required: true
+outputs:
+  run-url:
+    description: Accepted central workflow run; acceptance is not deployment success.
+    value: ${{ steps.notify.outputs.run-url }}
+runs:
+  using: composite
+  steps:
+    - name: Create receiver-scoped installation token
+      id: identity
+      uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+      with:
+        client-id: ${{ inputs.client-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: computer-mcp
+        repositories: computer-mcp.github.io
+        permission-actions: write
+    - name: Request central reconciliation
+      id: notify
+      shell: bash
+      env:
+        CATALOG_DISPATCH_TOKEN: ${{ steps.identity.outputs.token }}
+        CATALOG_ACTION_PATH: ${{ github.action_path }}
+      run: python3 "$CATALOG_ACTION_PATH/notify.py"

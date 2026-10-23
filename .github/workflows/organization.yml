@@ -1,0 +1,73 @@
+name: Organization
+on:
+  workflow_call:
+    inputs:
+      declaration-revision:
+        description: Full .github SHA owning both MAINTENANCE.md and profile/catalog.json
+        type: string
+        required: true
+      mode:
+        description: online reads GitHub; offline checks the bundled fixture
+        type: string
+        default: online
+      scope:
+        description: membership checks inventory and About; full adds declared settings
+        type: string
+        default: full
+    secrets:
+      organization-token:
+        description: Read access to organization/member settings, Apps and credential names
+        required: false
+    outputs:
+      declaration-revision:
+        description: Checked declaration revision (fixture label in offline mode)
+        value: ${{ jobs.organization.outputs.declaration-revision }}
+permissions: {}
+jobs:
+  organization:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      declaration-revision: ${{ inputs.declaration-revision }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - name: Validate inputs
+        env:
+          REVISION: ${{ inputs.declaration-revision }}
+          MODE: ${{ inputs.mode }}
+          SCOPE: ${{ inputs.scope }}
+        shell: bash
+        run: |
+          [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$MODE" == online || "$MODE" == offline ]]
+          [[ "$SCOPE" == membership || "$SCOPE" == full ]]
+      - if: inputs.mode == 'online'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: computer-mcp/.github
+          ref: ${{ inputs.declaration-revision }}
+          path: declaration
+          persist-credentials: false
+      - name: Check organization
+        env:
+          GH_TOKEN: ${{ secrets.organization-token || github.token }}
+          DECLARATION_REVISION: ${{ inputs.declaration-revision }}
+          MODE: ${{ inputs.mode }}
+          SCOPE: ${{ inputs.scope }}
+        shell: bash
+        run: |
+          if [[ "$MODE" == offline ]]; then
+            python3 -I .shared/scripts/check-organization.py --mode offline \
+              --declaration-root .shared/fixtures/declaration --declaration-revision "$DECLARATION_REVISION" \
+              --fixture .shared/fixtures/organization.json --scope "$SCOPE"
+          else
+            python3 -I .shared/scripts/check-organization.py --mode online \
+              --declaration-root declaration --declaration-revision "$DECLARATION_REVISION" --scope "$SCOPE"
+          fi

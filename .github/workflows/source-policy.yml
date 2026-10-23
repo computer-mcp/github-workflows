@@ -1,0 +1,33 @@
+name: Source policy checks
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+  merge_group:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  declaration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      revision: ${{ steps.standard.outputs.revision }}
+    steps:
+      - name: Resolve current organization rules once
+        id: standard
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          revision=$(gh api --method GET repos/computer-mcp/.github/commits/HEAD --jq .sha)
+          [[ "$revision" =~ ^[0-9a-f]{40}$ ]]
+          echo "revision=$revision" >> "$GITHUB_OUTPUT"
+  policy:
+    needs: declaration
+    uses: ./.github/workflows/policy.yml
+    with:
+      declaration-revision: ${{ needs.declaration.outputs.revision }}

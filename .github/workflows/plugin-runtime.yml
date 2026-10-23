@@ -1,0 +1,26 @@
+name: Plugin runtime
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  runtime:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: member
+          persist-credentials: false
+      - name: Verify shared Python runtime
+        env:
+          PLUGIN_RUNTIME_SHA256: '5a9f797bfca4b6ab31a9a648017fb1d09400593a9aab0d2250d426efa51f97cf'
+        run: |
+          python3 -I .shared/scripts/plugin-runtime.py check-workflow
+          python3 -I .shared/scripts/plugin-runtime.py check member
