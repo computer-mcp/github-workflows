@@ -24,7 +24,8 @@
 
 ## Overview
 
-Every Computer MCP repository calls these workflows instead of keeping its own copy. The
+These workflows let every Computer MCP repository run the same checks and releases without
+keeping its own copy. The
 organization's [MAINTENANCE](https://github.com/computer-mcp/.github/blob/master/MAINTENANCE.md)
 owns the rules; this repository implements them. Organization and source checks read the
 caller's full `.github` commit SHA and report that revision. Missing or unsupported

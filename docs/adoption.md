@@ -70,8 +70,8 @@ Update any local tests/documentation that refer to the retired action location.
 - The `.github` declaration used online contains both the accepted source rules
   and `profile/catalog.json`. Fixtures are never a live fallback.
 - MAINTENANCE stores catalog credentials only in the five public plugins.
-  `plugin-trae` is private and outside the catalog, so it has no notification
-  caller.
+  `plugin-trae` is private and outside the catalog, so adoption removes its
+  notification caller.
 - CI runs the organization check with `scope: membership`. The `full` scope
   needs administrative reads and runs from an organization owner's `gh` login;
   MAINTENANCE allows no additional organization-read secret. Inaccessible
