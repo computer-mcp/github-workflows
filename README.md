@@ -128,7 +128,7 @@ and [Signing](https://github.com/computer-mcp/.github/blob/master/MAINTENANCE.md
 | Owner identity and SSH signing; GitHub-created commits signed by GitHub | On default-branch pushes, every added commit must be GitHub-verified with reason `valid`, and use the declared owner identity plus an SSH signature or GitHub's `web-flow` committer identity |
 | Dependabot may author changes | Original authors are unrestricted; accepted committer/signature checks still apply |
 | Conventional Commit types, optional scope and breaking marker | PR titles and added commit subjects use the types parsed from the declaration |
-| No tool/agent attribution; human co-authors allowed | Attribution statements and identifiable tool/bot co-author trailers are rejected in titles, commit messages and added text; human co-authors and ordinary product references are retained |
+| No tool/agent attribution; human co-authors allowed | Attribution statements and identifiable tool/bot co-author trailers are rejected in PR titles and bodies, commit messages and added text; human co-authors and ordinary product references are retained |
 | No maintainer-machine paths or local task-state references | Added/modified paths, added text and messages are checked for concrete home-directory paths and local task-file references |
 | PR titles, added content and added/modified paths; verified default-branch commits | PR diffs use the merge base; pushes check their supplied range; removed lines are outside the added-content check |
 
@@ -137,11 +137,16 @@ accepted default-branch commits; final push checks verify the accepted commits.
 The checker reads Git blobs and forces text diffs for text files so consumer
 attributes cannot suppress scanning. Binary payloads are not decoded; their
 paths are checked. Attribution recognition is textual, not proof of the identity
-of every named co-author. Tool names and exact email addresses are maintained in
+of every named co-author. Attribution phrases, robot prefixes, tool names and exact email addresses are maintained in
 [data/attribution-tools.json](data/attribution-tools.json); matching is
 case-insensitive and also recognizes identities with a `[bot]` suffix.
-Generation statements and attribution trailers require a recognized tool/bot
-identity. Human credits and ordinary technical names are allowed.
+All message positions use the same attribution predicate: a listed phrase or
+robot prefix followed by a recognized tool/bot identity. Tool names require a
+word boundary; subsequent versions, CLI suffixes, links and explanations do not
+change the result. Co-author trailers with an email are classified by that email:
+listed tool addresses are rejected and other addresses are allowed, regardless of
+the name. Without an email, the tool-name rule applies. Human credits and ordinary
+technical names are allowed.
 
 Callers may set `path-exceptions` to a newline-separated string of
 repository-relative file globs (default empty). Matching is case-sensitive over

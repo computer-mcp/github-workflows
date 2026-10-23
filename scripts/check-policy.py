@@ -20,27 +20,35 @@ PRIVATE_PATH = re.compile(r"/(?:Users|home)/[\w. -]+(?:/|(?=[\s`\"')]|$))|"
                           r"[A-Za-z]:[\\/]Users[\\/][\w. -]+(?:[\\/]|(?=[\s`\"')]|$))")
 TASK_REFERENCE = re.compile(r"(?<![\w.-])[.]agent[/\\][^\s`\"'<>]+")
 TOOL_IDENTITIES = json.loads((Path(__file__).resolve().parents[1] / "data/attribution-tools.json").read_text())
-TOOL_NAMES = re.compile(r"(?:" + "|".join(re.escape(name) for name in TOOL_IDENTITIES["names"]) +
-                        r")(?=$|\s*[<(\[\]).!,:;\"']|\s+(?:for|with|using|to|on|and)\b)", re.I)
+TOOL_NAMES = re.compile(r"(?:" + "|".join(re.escape(name) for name in TOOL_IDENTITIES["names"]) + r")\b", re.I)
 TOOL_EMAILS = {email.casefold() for email in TOOL_IDENTITIES["emails"]}
-ATTRIBUTION = re.compile(r"\b(?:generated[- ](?:by|with)\s*:?|"
-                         r"(?:co-authored-by|assisted-by|powered-by|made-with|signed-off-by):)[ \t]*", re.I)
+ATTRIBUTION = re.compile(
+    r"(?:\b(?:" + "|".join(re.escape(phrase).replace(r"\ ", "[- ]")
+                             for phrase in TOOL_IDENTITIES["phrases"]) +
+    r")\b[ \t]*:?|" + "|".join(re.escape(prefix) for prefix in TOOL_IDENTITIES["prefixes"]) + r")[ \t]*",
+    re.I,
+)
 
 
-def tool_identity(value):
+def tool_identity(value, *, coauthor=False):
+    emails = re.findall(r"[\w.+-]+@[\w.-]+", value)
+    if coauthor and emails:
+        return any(email.casefold() in TOOL_EMAILS for email in emails)
     # Markdown emphasis and links may wrap an attribution's named identity.
     value = re.sub(r"[`*_]", "", value.strip())
     value = re.sub(r"\[([^]\n]+)\]\([^\n)]*\)", r"\1", value)
     name = value.split("<", 1)[0].strip()
     if re.search(r"[\w-]+\[bot\](?=$|[\s<(.,;])", name, re.I):
         return True
-    if any(email.casefold() in TOOL_EMAILS for email in re.findall(r"<([^<>\s]+@[^<>\s]+)>", value)):
+    if any(email.casefold() in TOOL_EMAILS for email in emails):
         return True
     return bool(TOOL_NAMES.match(value))
 
 
 def attribution(text):
-    return any(tool_identity(text[match.end():].split("\n", 1)[0]) for match in ATTRIBUTION.finditer(text))
+    return any(tool_identity(text[match.end():].split("\n", 1)[0],
+                             coauthor=match.group().lower().startswith("co-authored-by"))
+               for match in ATTRIBUTION.finditer(text))
 
 
 def parse_path_exceptions(value):
@@ -128,6 +136,7 @@ def check(root, event, event_name, policy, api, *, path_exceptions=()):
         if "\n" in title or "\r" in title:
             findings.append("PR title: expected one line")
         findings += message_findings("PR title", title, policy)
+        findings += content_findings("PR body", pr.get("body") or "")
         comparison = git(root, "merge-base", base, head).strip()
     elif event_name == "merge_group":
         head, base = sha(event["merge_group"]["head_sha"]), sha(event["merge_group"]["base_sha"])
