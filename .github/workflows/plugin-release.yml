@@ -1,0 +1,170 @@
+name: Plugin release
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Signed annotated version tag, or a commit for a dry run
+        type: string
+        required: true
+      publish:
+        description: Publish the verified release (false assembles a dry-run bundle)
+        type: boolean
+        default: false
+      build:
+        description: Build command; the workflow appends the output directory as its final argument
+        type: string
+        required: true
+      ci_artifact:
+        description: Exact ci.yml artifact name; ${commit} expands to the resolved commit
+        type: string
+        required: true
+      runner:
+        description: Runner for the isolated caller build
+        type: string
+        default: ubuntu-24.04
+    outputs:
+      published:
+        description: True only when a complete immutable release is public
+        value: ${{ jobs.publish.outputs.published || 'false' }}
+      release_id:
+        description: Published GitHub Release ID (empty for a dry run)
+        value: ${{ jobs.publish.outputs.release_id }}
+      tag:
+        description: Verified version tag (empty for an untagged dry run)
+        value: ${{ jobs.verify.outputs.tag }}
+permissions: {}
+env:
+  PLUGIN_RELEASE_SHA256: 'a7622635843b200caf28dc61edc905eb1ec53c696b54794dbadf786063d130d9'
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      commit: ${{ steps.source.outputs.commit }}
+      workflow_ref: ${{ steps.source.outputs.workflow_ref }}
+      workflow_sha: ${{ steps.source.outputs.workflow_sha }}
+    steps:
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.13'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - name: Resolve and verify the source ref
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          RELEASE_REF: ${{ inputs.ref }}
+          RELEASE_PUBLISH: ${{ inputs.publish }}
+          RELEASE_WORKFLOW_REF: ${{ job.workflow_ref }}
+          RELEASE_WORKFLOW_SHA: ${{ job.workflow_sha }}
+        shell: bash
+        run: python3 -I .shared/scripts/release-step.py source
+  build:
+    needs: source
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 30
+    permissions: {}
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.13'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.source.outputs.commit }}
+          persist-credentials: false
+      - name: Build the caller's archives
+        env:
+          RELEASE_BUILD: ${{ inputs.build }}
+        shell: bash
+        run: |
+          bash -euo pipefail -c "$RELEASE_BUILD \"\$1\"" plugin-build "$RUNNER_TEMP/plugin-release-build"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        id: upload
+        with:
+          name: plugin-build-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plugin-release-build/
+          if-no-files-found: error
+          retention-days: 14
+  verify:
+    needs: [source, build]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      tag: ${{ steps.bundle.outputs.tag }}
+      asset_digests: ${{ steps.bundle.outputs.asset_digests }}
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.13'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - name: Verify the helper, compare archive bytes and assemble the bundle
+        id: bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          RELEASE_REF: ${{ inputs.ref }}
+          RELEASE_PUBLISH: ${{ inputs.publish }}
+          RELEASE_BUILD_ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          RELEASE_COMMIT: ${{ needs.source.outputs.commit }}
+          GH_RUN_ID: ${{ github.run_id }}
+          RELEASE_CI_ARTIFACT: ${{ inputs.ci_artifact }}
+          RELEASE_WORKFLOW_REF: ${{ needs.source.outputs.workflow_ref }}
+          RELEASE_WORKFLOW_SHA: ${{ needs.source.outputs.workflow_sha }}
+        shell: bash
+        run: python3 -I .shared/scripts/release-step.py verify
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        id: upload
+        with:
+          name: plugin-release-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/plugin-release/
+          if-no-files-found: error
+          retention-days: 14
+  publish:
+    if: inputs.publish
+    needs: verify
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      published: ${{ steps.release.outputs.published }}
+      release_id: ${{ steps.release.outputs.release_id }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ needs.verify.outputs.artifact_id }}
+          path: ${{ runner.temp }}/plugin-release
+          merge-multiple: true
+      - name: Verify the helper and publish only the verified bundle
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPOSITORY: ${{ github.repository }}
+          RELEASE_ASSET_DIGESTS: ${{ needs.verify.outputs.asset_digests }}
+        shell: bash
+        run: python3 -I .shared/scripts/release-step.py publish
