@@ -1,0 +1,52 @@
+name: Source policy
+on:
+  workflow_call:
+    inputs:
+      declaration-revision:
+        description: Full commit SHA of computer-mcp/.github containing MAINTENANCE.md
+        type: string
+        required: true
+    outputs:
+      declaration-revision:
+        description: Enforced MAINTENANCE revision
+        value: ${{ jobs.policy.outputs.declaration-revision }}
+permissions: {}
+jobs:
+  policy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    outputs:
+      declaration-revision: ${{ inputs.declaration-revision }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - name: Validate declaration revision
+        env:
+          REVISION: ${{ inputs.declaration-revision }}
+        run: '[[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]'
+        shell: bash
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: computer-mcp/.github
+          ref: ${{ inputs.declaration-revision }}
+          path: declaration
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          path: member
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check source policy
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DECLARATION_REVISION: ${{ inputs.declaration-revision }}
+        run: >-
+          python3 -I .shared/scripts/check-policy.py --root member
+          --declaration-root declaration --declaration-revision "$DECLARATION_REVISION"

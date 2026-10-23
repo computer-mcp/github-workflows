@@ -1,0 +1,32 @@
+name: Aggregate result
+on:
+  workflow_call:
+    inputs:
+      needs-json:
+        description: toJSON(needs) from an always() caller job
+        type: string
+        required: true
+      optional-jobs:
+        description: JSON array of dependency names allowed to be skipped
+        type: string
+        default: '[]'
+permissions: {}
+jobs:
+  validate:
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - name: Require successful dependencies
+        env:
+          NEEDS: ${{ inputs.needs-json }}
+          OPTIONAL_JOBS: ${{ inputs.optional-jobs }}
+        run: python3 -I .shared/scripts/check-result.py
