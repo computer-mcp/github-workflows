@@ -52,6 +52,7 @@ jobs:
 | [actions/notify-catalog](actions/notify-catalog/action.yml) | Required `client-id`, `private-key` | `run-url`; receiver-scoped App token with `actions: write` |
 | [organization.yml](.github/workflows/organization.yml) | Required `declaration-revision`; `mode=online` or `offline`; optional secret `organization-token` | `declaration-revision`; GET-only observations; `contents: read` |
 | [policy.yml](.github/workflows/policy.yml) | Required `declaration-revision`; `path-exceptions=''` | `declaration-revision`; pass/fail; `contents: read` |
+| [terminal-demo.yml](.github/workflows/terminal-demo.yml) | Required `artifact`, `executable`, `runner`; `archive=''`, `assets=.github/assets/terminal` | Pass/fail; `contents: read` |
 | [result.yml](.github/workflows/result.yml) | Required `needs-json`; `optional-jobs='[]'` | Pass/fail aggregate; `contents: read` |
 
 [Runtime adoption](docs/plugin-runtime.md) describes the unchanged digest
@@ -236,6 +237,38 @@ This repository's [policy caller](.github/workflows/source-policy.yml) resolves
 organization default-branch rules to one SHA per run and calls the same policy.
 Until those rules reach the organization's default branch, this check correctly
 fails for missing declarations. No temporary organization revision is embedded.
+
+## Terminal demo
+
+Re-record the caller's terminal demo against its freshly built CLI and compare
+only `recording.json`. Assets default to `.github/assets/terminal`; DESIGN and
+fonts are not required. The presentation toolchain pin lives in this workflow.
+
+The build job uploads the named artifact in the same run. Use a `.tar.gz` to
+preserve executable permissions across artifact upload/download. When `archive`
+is set, it must match one `.tar.gz`, extracted into a fresh directory;
+`executable` is relative to that directory. Otherwise `executable` is relative
+to the downloaded artifact. Both accept globs, require exactly one regular file
+and reject absolute paths, `..` components and paths escaping their directory.
+The executable must have execute permission. Choose a `runner` that can run it.
+
+```yaml
+jobs:
+  demo:
+    needs: package
+    uses: computer-mcp/github-workflows/.github/workflows/terminal-demo.yml@<workflow-sha>
+    with:
+      artifact: <artifact name uploaded by package>
+      archive: <archive glob>
+      executable: <path to the CLI>
+      runner: <runner label>
+  validate:
+    if: always()
+    needs: [package, demo]
+    uses: computer-mcp/github-workflows/.github/workflows/result.yml@<workflow-sha>
+    with:
+      needs-json: ${{ toJSON(needs) }}
+```
 
 ## Aggregation
 

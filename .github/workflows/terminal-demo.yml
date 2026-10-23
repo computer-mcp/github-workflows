@@ -1,0 +1,87 @@
+name: Terminal demo
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        description: Name of the built CLI artifact from this workflow run
+        type: string
+        required: true
+      archive:
+        description: Relative path or glob matching exactly one .tar.gz in the artifact
+        type: string
+        default: ''
+      executable:
+        description: Relative path or glob matching exactly one executable in the artifact or extracted archive
+        type: string
+        required: true
+      assets:
+        description: Terminal asset directory in the caller checkout
+        type: string
+        default: .github/assets/terminal
+      runner:
+        description: Runner label that can execute the built CLI
+        type: string
+        required: true
+permissions: {}
+jobs:
+  demo:
+    runs-on: ${{ inputs.runner }}
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: ${{ job.workflow_repository }}
+          ref: ${{ job.workflow_sha }}
+          path: .shared
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.13'
+      - name: Prepare a fresh artifact directory
+        id: directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          directory="$(mktemp -d "$RUNNER_TEMP/terminal-demo.XXXXXX")"
+          printf 'path=%s\n' "$directory" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ${{ inputs.artifact }}
+          path: ${{ steps.directory.outputs.path }}/artifact
+      - name: Resolve the built executable
+        id: executable
+        env:
+          DEMO_ARTIFACT: ${{ steps.directory.outputs.path }}/artifact
+          DEMO_ARCHIVE: ${{ inputs.archive }}
+          DEMO_EXECUTABLE: ${{ inputs.executable }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          executable="$(python3 -I .shared/scripts/resolve-terminal-demo.py \
+            --artifact-dir "$DEMO_ARTIFACT" --archive "$DEMO_ARCHIVE" \
+            --executable "$DEMO_EXECUTABLE")"
+          printf 'path=%s\n' "$executable" >> "$GITHUB_OUTPUT"
+      - name: Check the terminal recording
+        uses: showxu/skills/skills/github-readme-design/scripts@36707036061a2d0ba012184ef0b6d6820082127f
+        with:
+          asset: terminal
+          command: check
+          recording-only: 'true'
+          assets: ${{ inputs.assets }}
+          executable: ${{ steps.executable.outputs.path }}
+      - name: Remove temporary demo files
+        if: always()
+        env:
+          DEMO_DIRECTORY: ${{ steps.directory.outputs.path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -n "$DEMO_DIRECTORY" ]]; then
+            rm -rf -- "$DEMO_DIRECTORY"
+          fi
