@@ -1,6 +1,6 @@
 # Plugin release workflow
 
-The reusable [workflow](../../.github/workflows/plugin-release.yml) builds and
+The reusable [workflow](../.github/workflows/plugin-release.yml) builds and
 publishes reproducible plugin packages. [Shared VERSIONING](https://github.com/computer-mcp/.github/blob/master/VERSIONING.md#plugin-release-contents)
 owns the contents, receipt schema, provenance and recovery rules. Codex uses its
 documented native artifact promotion exception.

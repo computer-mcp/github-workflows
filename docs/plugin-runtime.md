@@ -1,6 +1,6 @@
 # Shared Python plugin runtime
 
-[plugin_runtime.py](plugin_runtime.py) is the canonical stdlib runtime shared by
+[plugin_runtime.py](../plugin-runtime/plugin_runtime.py) is the canonical stdlib runtime shared by
 the Claude, Cursor and TRAE plugins. It provides stdio MCP, bounded JSON and
 schema validation, process ownership and cleanup, cancellation, event buffers
 and native-version checks. Each plugin owns its vendor adapter, version
