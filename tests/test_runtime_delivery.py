@@ -13,7 +13,7 @@ import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-CANONICAL = ROOT / "PluginRuntime/plugin_runtime.py"
+CANONICAL = ROOT / "plugin-runtime/plugin_runtime.py"
 WORKFLOW = ROOT / ".github/workflows/plugin-runtime.yml"
 
 
@@ -24,7 +24,7 @@ class DeliveryTests(unittest.TestCase):
         self.root = Path(temporary.name)
         self.authority = self.root / "standards"
         self.script = self.authority / "scripts/plugin-runtime.py"
-        self.canonical = self.authority / "PluginRuntime/plugin_runtime.py"
+        self.canonical = self.authority / "plugin-runtime/plugin_runtime.py"
         self.workflow = self.authority / ".github/workflows/plugin-runtime.yml"
         for source, target in (
             (ROOT / "scripts/plugin-runtime.py", self.script),

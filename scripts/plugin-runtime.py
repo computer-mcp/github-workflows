@@ -14,7 +14,7 @@ import shutil
 import sys
 
 ROOT = Path(__file__).resolve().parent.parent
-CANONICAL = ROOT / "PluginRuntime/plugin_runtime.py"
+CANONICAL = ROOT / "plugin-runtime/plugin_runtime.py"
 WORKFLOW = ROOT / ".github/workflows/plugin-runtime.yml"
 TARGET = "bin/plugin_runtime.py"
 

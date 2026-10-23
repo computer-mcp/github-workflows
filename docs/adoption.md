@@ -53,7 +53,7 @@ archive rebuilding.
 ## Shared owners
 
 The organization `.github` owner retires the migrated implementations only after
-consumers have moved: the plugin runtime/release workflows, `PluginRuntime/`,
+consumers have moved: the plugin runtime/release workflows, `plugin-runtime/`,
 `Scripts/plugin-runtime.py`, `Scripts/plugin_release.py`, `Scripts/check-settings.py`
 and their tests and operating guide. Its README and MAINTENANCE operational
 command link to this repository. It retains rules, catalog data, documentation

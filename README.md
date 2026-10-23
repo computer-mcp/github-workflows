@@ -17,8 +17,8 @@ unsupported declarations fail explicitly.
 | [policy.yml](.github/workflows/policy.yml) | Required `declaration-revision` | `declaration-revision`; pass/fail; `contents: read` |
 | [result.yml](.github/workflows/result.yml) | Required `needs-json`; `optional-jobs='[]'` | Pass/fail aggregate; `contents: read` |
 
-[Runtime adoption](PluginRuntime/README.md) describes the unchanged digest
-contract. The [release guide](Documentation/Reference/PluginRelease.md) covers
+[Runtime adoption](docs/plugin-runtime.md) describes the unchanged digest
+contract. The [release guide](docs/plugin-release.md) covers
 reproducible archives, isolated builds, immutable publication and recovery.
 Notification requests the website's existing `pages.yml` on `master`, with no
 catalog metadata. `run-url` proves request acceptance; inspect that run for
@@ -26,7 +26,7 @@ catalog validation and deployment.
 
 Executable automation lives in lowercase `scripts/`; imported Python modules use
 snake_case. `tests/` and `fixtures/` hold offline evidence. Operating and adoption
-guides live in `Documentation/Reference/`.
+guides live in `docs/`.
 
 ## Pins and versions
 
@@ -109,6 +109,11 @@ Administrative read access is needed for settings and App installation repositor
 lists. A normal workflow token may produce unavailable observations. The optional
 `organization-token` secret accepts an already authorized credential; it does
 not provision credentials or authorize an additional stored secret.
+
+`scope: membership` checks only the inventory and About sentences, which the
+workflow token can read; the `.github` repository's CI uses it. The default
+`scope: full` adds the declared settings and runs where administrative reads
+are available, such as an organization owner's local `gh` login.
 
 Offline mode uses only the bundled declaration and GET-response fixture, labels
 its revision as fixture evidence and makes no live conformance claim.
@@ -210,5 +215,5 @@ publication fault injection, notifier transport, organization drift, source
 ranges and aggregation offline. Temporary environments belong in ignored
 `.build/` and may be removed after checking.
 
-The [adoption checklist](Documentation/Reference/Adoption.md) names consumer files
+The [adoption checklist](docs/adoption.md) names consumer files
 and rollout prerequisites.

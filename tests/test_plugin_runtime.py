@@ -5,7 +5,7 @@ import sys
 import unittest
 from unittest.mock import Mock, patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "PluginRuntime"))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "plugin-runtime"))
 import plugin_runtime as runtime
 
 
