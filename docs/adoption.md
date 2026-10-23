@@ -21,7 +21,7 @@ repository guards, secrets and output mappings. All paths are repository-relativ
 | `plugin-cursor` | `.github/workflows/notify-catalog.yml` | Pin notification action here |
 | `plugin-trae` | `.github/workflows/ci.yml` | Pin runtime here; remove brand job/dependencies; aggregate validation |
 | `plugin-trae` | `.github/workflows/release.yml` | Pin release here with existing inputs |
-| `plugin-trae` | `.github/workflows/notify-catalog.yml` | Pin notification action here after resolving credential scope below |
+| `plugin-trae` | `.github/workflows/notify-catalog.yml` | Remove; the private plugin has no catalog notification |
 | `plugin-computer-use` | `.github/workflows/ci.yml` | Remove brand job/dependencies; aggregate validation |
 | `plugin-computer-use` | `.github/workflows/release.yml` | Pin release here with existing inputs |
 | `plugin-computer-use` | `.github/workflows/notify-catalog.yml` | Pin notification action here |
@@ -52,36 +52,33 @@ archive rebuilding.
 
 ## Shared owners
 
-The organization `.github` owner retires the migrated implementations only after
-consumers have moved: the plugin runtime/release workflows, `PluginRuntime/`,
-`Scripts/plugin-runtime.py`, `Scripts/plugin_release.py`, `Scripts/check-settings.py`
-and their tests and operating guide. Its README and MAINTENANCE operational
-command link to this repository. It retains rules, catalog data, documentation
-and thin workflow callers. Brand-check callers are removed under the accepted
-presentation standard; no brand-check workflow is provided here.
+The organization `.github` repository no longer contains the migrated
+implementations (the plugin runtime and release workflows, `PluginRuntime/`,
+the plugin and settings scripts with their tests and operating guide) or the
+brand-check workflow. A member that has not moved yet keeps working because it
+pins an earlier `.github` commit, which still resolves. `.github` keeps rules,
+catalog data, documentation and thin callers, and its README and MAINTENANCE
+link here for operation.
 
 The website owner retires `.github/actions/notify-catalog/` and the migrated
 notification transport tests after callers move. Its `pages.yml` receiver,
 catalog validation and deployment implementation keep their existing contracts.
 Update any local tests/documentation that refer to the retired action location.
 
-## Adoption prerequisites and owner decisions
+## Adoption requirements
 
-- The `.github` declaration used online must contain both the accepted source
-  rules and `profile/catalog.json`. Fixtures are never a live fallback.
-- The current MAINTENANCE App table lists catalog credential storage in five
-  plugins, while `plugin-trae` also has a notification caller. Its owner must
-  either declare and provision that scope or retire that notification caller.
-  This repository does neither.
-- Full online settings checks require administrative read access and access to
-  App installation repository lists. MAINTENANCE currently allows only the
-  listed App credentials, not an additional organization-read secret. Decide
-  the approved execution/credential arrangement before unattended online CI;
-  local runs can use an organization owner's existing `gh` login. Inaccessible
+- The `.github` declaration used online contains both the accepted source rules
+  and `profile/catalog.json`. Fixtures are never a live fallback.
+- MAINTENANCE stores catalog credentials only in the five public plugins.
+  `plugin-trae` is private and outside the catalog, so adoption removes its
+  notification caller.
+- CI runs the organization check with `scope: membership`. The `full` scope
+  needs administrative reads and runs from an organization owner's `gh` login;
+  MAINTENANCE allows no additional organization-read secret. Inaccessible
   observations exit nonzero as unknown.
-- Run one representative consumer at the candidate pin before broad rollout.
-  Local fixture/archived-source runs do not replace a GitHub Actions run at that
-  pin. Retain running and queued releases during the rollout.
+- A new pin is adopted after one representative consumer run at that pin on
+  GitHub Actions; local fixture or archived-source runs do not replace it.
+  Retain running and queued releases during the rollout.
 
 No additional source-policy rule is required for this implementation. The checker
 does not infer new allowed identities, contributor restrictions or content bans
