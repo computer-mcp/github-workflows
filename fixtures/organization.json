@@ -1,0 +1,1157 @@
+{
+  "orgs/computer-mcp/repos?type=all&per_page=100&page=1": [
+    {
+      "name": ".github",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": ".github fixture About"
+    },
+    {
+      "name": "computer-mcp",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "computer-mcp fixture About"
+    },
+    {
+      "name": "computer-mcp.github.io",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "computer-mcp.github.io fixture About"
+    },
+    {
+      "name": "github-workflows",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "github-workflows fixture About"
+    },
+    {
+      "name": "homebrew-tap",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "homebrew-tap fixture About"
+    },
+    {
+      "name": "plugin-claude",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "plugin-claude fixture About"
+    },
+    {
+      "name": "plugin-codex",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "plugin-codex fixture About"
+    },
+    {
+      "name": "plugin-computer-use",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "plugin-computer-use fixture About"
+    },
+    {
+      "name": "plugin-cursor",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "plugin-cursor fixture About"
+    },
+    {
+      "name": "plugin-swift-format",
+      "private": false,
+      "archived": false,
+      "fork": false,
+      "description": "plugin-swift-format fixture About"
+    },
+    {
+      "name": "upstream-fork",
+      "private": false,
+      "archived": false,
+      "fork": true,
+      "description": "Upstream fixture"
+    },
+    {
+      "name": "retired",
+      "private": false,
+      "archived": true,
+      "fork": false,
+      "description": "Retired fixture"
+    },
+    {
+      "name": "private-repo",
+      "private": true,
+      "archived": false,
+      "fork": false,
+      "description": "Private fixture"
+    }
+  ],
+  "orgs/computer-mcp/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "orgs/computer-mcp/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "orgs/computer-mcp/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/.github": {
+    "name": ".github",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": ".github fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/.github/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/.github/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "repos/computer-mcp/.github/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/.github/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/.github"
+    }
+  ],
+  "repos/computer-mcp/.github/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/.github",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/computer-mcp": {
+    "name": "computer-mcp",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "computer-mcp fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/computer-mcp/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/computer-mcp/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "repos/computer-mcp/computer-mcp/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/computer-mcp/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/computer-mcp"
+    }
+  ],
+  "repos/computer-mcp/computer-mcp/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/computer-mcp",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      },
+      {
+        "type": "merge_queue",
+        "parameters": {
+          "merge_method": "SQUASH",
+          "grouping_strategy": "ALLGREEN"
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/computer-mcp.github.io": {
+    "name": "computer-mcp.github.io",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "computer-mcp.github.io fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/computer-mcp.github.io/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/computer-mcp.github.io/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "AUTOMATION_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/computer-mcp.github.io/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "AUTOMATION_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/computer-mcp.github.io/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/computer-mcp.github.io"
+    }
+  ],
+  "repos/computer-mcp/computer-mcp.github.io/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/computer-mcp.github.io",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/github-workflows": {
+    "name": "github-workflows",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "github-workflows fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/github-workflows/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/github-workflows/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "repos/computer-mcp/github-workflows/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/github-workflows/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/github-workflows"
+    }
+  ],
+  "repos/computer-mcp/github-workflows/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/github-workflows",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/homebrew-tap": {
+    "name": "homebrew-tap",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "homebrew-tap fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/homebrew-tap/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/homebrew-tap/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "AUTOMATION_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/homebrew-tap/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "AUTOMATION_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/homebrew-tap/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/homebrew-tap"
+    }
+  ],
+  "repos/computer-mcp/homebrew-tap/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/homebrew-tap",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-claude": {
+    "name": "plugin-claude",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "plugin-claude fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/plugin-claude/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/plugin-claude/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "CATALOG_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-claude/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "CATALOG_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-claude/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/plugin-claude"
+    }
+  ],
+  "repos/computer-mcp/plugin-claude/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/plugin-claude",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-codex": {
+    "name": "plugin-codex",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "plugin-codex fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/plugin-codex/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/plugin-codex/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "CATALOG_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-codex/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "CATALOG_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-codex/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/plugin-codex"
+    }
+  ],
+  "repos/computer-mcp/plugin-codex/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/plugin-codex",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-computer-use": {
+    "name": "plugin-computer-use",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "plugin-computer-use fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/plugin-computer-use/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/plugin-computer-use/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "CATALOG_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-computer-use/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "CATALOG_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-computer-use/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/plugin-computer-use"
+    }
+  ],
+  "repos/computer-mcp/plugin-computer-use/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/plugin-computer-use",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-cursor": {
+    "name": "plugin-cursor",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "plugin-cursor fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/plugin-cursor/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/plugin-cursor/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "CATALOG_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-cursor/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "CATALOG_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-cursor/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/plugin-cursor"
+    }
+  ],
+  "repos/computer-mcp/plugin-cursor/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/plugin-cursor",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-swift-format": {
+    "name": "plugin-swift-format",
+    "private": false,
+    "archived": false,
+    "fork": false,
+    "description": "plugin-swift-format fixture About",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/plugin-swift-format/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/plugin-swift-format/actions/secrets?per_page=100&page=1": {
+    "secrets": [
+      {
+        "name": "CATALOG_APP_PRIVATE_KEY"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-swift-format/actions/variables?per_page=100&page=1": {
+    "variables": [
+      {
+        "name": "CATALOG_APP_CLIENT_ID"
+      }
+    ]
+  },
+  "repos/computer-mcp/plugin-swift-format/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/plugin-swift-format"
+    }
+  ],
+  "repos/computer-mcp/plugin-swift-format/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/plugin-swift-format",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/upstream-fork": {
+    "name": "upstream-fork",
+    "private": false,
+    "archived": false,
+    "fork": true,
+    "description": "Upstream fixture",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "upstream"
+  },
+  "repos/computer-mcp/upstream-fork/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/upstream-fork/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "repos/computer-mcp/upstream-fork/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/upstream-fork/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/upstream-fork"
+    }
+  ],
+  "repos/computer-mcp/upstream-fork/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/upstream-fork",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/retired": {
+    "name": "retired",
+    "private": false,
+    "archived": true,
+    "fork": false,
+    "description": "Retired fixture",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/retired/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/retired/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "repos/computer-mcp/retired/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/retired/rulesets?includes_parents=true&per_page=100&page=1": [
+    {
+      "id": 1,
+      "name": "default branch",
+      "source_type": "Repository",
+      "source": "computer-mcp/retired"
+    }
+  ],
+  "repos/computer-mcp/retired/rulesets/1": {
+    "id": 1,
+    "name": "default branch",
+    "source_type": "Repository",
+    "source": "computer-mcp/retired",
+    "target": "branch",
+    "enforcement": "active",
+    "bypass_actors": [],
+    "conditions": {
+      "ref_name": {
+        "include": [
+          "~DEFAULT_BRANCH"
+        ],
+        "exclude": []
+      }
+    },
+    "rules": [
+      {
+        "type": "deletion"
+      },
+      {
+        "type": "non_fast_forward"
+      },
+      {
+        "type": "required_signatures"
+      },
+      {
+        "type": "pull_request",
+        "parameters": {
+          "allowed_merge_methods": [
+            "squash"
+          ]
+        }
+      },
+      {
+        "type": "required_status_checks",
+        "parameters": {
+          "required_status_checks": [
+            {
+              "context": "validate"
+            }
+          ],
+          "strict_required_status_checks_policy": false
+        }
+      }
+    ]
+  },
+  "repos/computer-mcp/private-repo": {
+    "name": "private-repo",
+    "private": true,
+    "archived": false,
+    "fork": false,
+    "description": "Private fixture",
+    "allow_squash_merge": true,
+    "allow_merge_commit": false,
+    "allow_rebase_merge": false,
+    "delete_branch_on_merge": true,
+    "default_branch": "master"
+  },
+  "repos/computer-mcp/private-repo/actions/permissions/workflow": {
+    "default_workflow_permissions": "read",
+    "can_approve_pull_request_reviews": false
+  },
+  "repos/computer-mcp/private-repo/actions/secrets?per_page=100&page=1": {
+    "secrets": []
+  },
+  "repos/computer-mcp/private-repo/actions/variables?per_page=100&page=1": {
+    "variables": []
+  },
+  "repos/computer-mcp/private-repo/rulesets?includes_parents=true&per_page=100&page=1": [],
+  "user/installations/1/repositories?per_page=100&page=1": {
+    "repositories": [
+      {
+        "name": "computer-mcp.github.io"
+      }
+    ]
+  },
+  "user/installations/2/repositories?per_page=100&page=1": {
+    "repositories": [
+      {
+        "name": "computer-mcp.github.io"
+      },
+      {
+        "name": "homebrew-tap"
+      }
+    ]
+  },
+  "orgs/computer-mcp/installations?per_page=100&page=1": {
+    "installations": [
+      {
+        "id": 1,
+        "app_slug": "computer-mcp-release-notifier",
+        "permissions": {
+          "actions": "write",
+          "metadata": "read"
+        },
+        "events": [],
+        "repository_selection": "selected"
+      },
+      {
+        "id": 2,
+        "app_slug": "computer-mcp-updater",
+        "permissions": {
+          "contents": "write",
+          "pull_requests": "write",
+          "metadata": "read"
+        },
+        "events": [],
+        "repository_selection": "selected"
+      }
+    ]
+  }
+}

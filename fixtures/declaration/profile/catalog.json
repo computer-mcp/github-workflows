@@ -1,0 +1,90 @@
+{
+  "organization": {
+    "login": "computer-mcp",
+    "name": "Computer MCP",
+    "about": "Tools for computers"
+  },
+  "promise": "Use computer tools",
+  "secondary": "Reusable automation",
+  "mark": "assets/mark.svg",
+  "navigation": {},
+  "groups": [
+    {
+      "title": "Repositories",
+      "repositories": [
+        {
+          "name": "computer-mcp",
+          "kind": "tool",
+          "title": "computer-mcp",
+          "about": "computer-mcp fixture About",
+          "outcome": "Run computer-mcp",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "computer-mcp.github.io",
+          "kind": "tool",
+          "title": "computer-mcp.github.io",
+          "about": "computer-mcp.github.io fixture About",
+          "outcome": "Run computer-mcp.github.io",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "github-workflows",
+          "kind": "tool",
+          "title": "github-workflows",
+          "about": "github-workflows fixture About",
+          "outcome": "Run github-workflows",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "homebrew-tap",
+          "kind": "tool",
+          "title": "homebrew-tap",
+          "about": "homebrew-tap fixture About",
+          "outcome": "Run homebrew-tap",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "plugin-claude",
+          "kind": "tool",
+          "title": "plugin-claude",
+          "about": "plugin-claude fixture About",
+          "outcome": "Run plugin-claude",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "plugin-codex",
+          "kind": "tool",
+          "title": "plugin-codex",
+          "about": "plugin-codex fixture About",
+          "outcome": "Run plugin-codex",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "plugin-computer-use",
+          "kind": "tool",
+          "title": "plugin-computer-use",
+          "about": "plugin-computer-use fixture About",
+          "outcome": "Run plugin-computer-use",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "plugin-cursor",
+          "kind": "tool",
+          "title": "plugin-cursor",
+          "about": "plugin-cursor fixture About",
+          "outcome": "Run plugin-cursor",
+          "icon": "assets/mark.svg"
+        },
+        {
+          "name": "plugin-swift-format",
+          "kind": "tool",
+          "title": "plugin-swift-format",
+          "about": "plugin-swift-format fixture About",
+          "outcome": "Run plugin-swift-format",
+          "icon": "assets/mark.svg"
+        }
+      ]
+    }
+  ]
+}
