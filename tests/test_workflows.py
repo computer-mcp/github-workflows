@@ -35,6 +35,16 @@ class WorkflowTests(unittest.TestCase):
         self.assertEqual(set(action["inputs"]), {"client-id", "private-key"})
         self.assertEqual(set(action["outputs"]), {"run-url"})
 
+    def test_policy_path_exceptions_are_optional_and_passed_as_data(self):
+        workflow = workflows.read(ROOT / ".github/workflows/policy.yml")
+        argument = workflow["on"]["workflow_call"]["inputs"]["path-exceptions"]
+        self.assertEqual(argument["type"], "string")
+        self.assertEqual(argument["default"], "")
+        step = workflow["jobs"]["policy"]["steps"][-1]
+        self.assertEqual(step["env"]["PATH_EXCEPTIONS"], "${{ inputs.path-exceptions }}")
+        self.assertIn('--path-exceptions "$PATH_EXCEPTIONS"', step["run"])
+        self.assertNotIn("${{ inputs.path-exceptions }}", step["run"])
+
     def test_release_and_runtime_keep_public_interfaces(self):
         release = workflows.read(ROOT / ".github/workflows/plugin-release.yml")["on"]["workflow_call"]
         self.assertEqual(set(release["inputs"]), {"ref", "publish", "build", "ci_artifact", "runner"})

@@ -14,7 +14,7 @@ unsupported declarations fail explicitly.
 | [plugin-release.yml](.github/workflows/plugin-release.yml) | Required `ref`, `build`, `ci_artifact`; `publish=false`, `runner=ubuntu-24.04` | `published`, `release_id`, `tag`; caller grants `contents: write`, `actions: read`; no secret inputs |
 | [actions/notify-catalog](actions/notify-catalog/action.yml) | Required `client-id`, `private-key` | `run-url`; receiver-scoped App token with `actions: write` |
 | [organization.yml](.github/workflows/organization.yml) | Required `declaration-revision`; `mode=online` or `offline`; optional secret `organization-token` | `declaration-revision`; GET-only observations; `contents: read` |
-| [policy.yml](.github/workflows/policy.yml) | Required `declaration-revision` | `declaration-revision`; pass/fail; `contents: read` |
+| [policy.yml](.github/workflows/policy.yml) | Required `declaration-revision`; `path-exceptions=''` | `declaration-revision`; pass/fail; `contents: read` |
 | [result.yml](.github/workflows/result.yml) | Required `needs-json`; `optional-jobs='[]'` | Pass/fail aggregate; `contents: read` |
 
 [Runtime adoption](docs/plugin-runtime.md) describes the unchanged digest
@@ -137,7 +137,35 @@ accepted default-branch commits; final push checks verify the accepted commits.
 The checker reads Git blobs and forces text diffs for text files so consumer
 attributes cannot suppress scanning. Binary payloads are not decoded; their
 paths are checked. Attribution recognition is textual, not proof of the identity
-of every named co-author.
+of every named co-author. Tool names and exact email addresses are maintained in
+[data/attribution-tools.json](data/attribution-tools.json); matching is
+case-insensitive and also recognizes identities with a `[bot]` suffix.
+Generation statements and attribution trailers require a recognized tool/bot
+identity. Human credits and ordinary technical names are allowed.
+
+Callers may set `path-exceptions` to a newline-separated string of
+repository-relative file globs (default empty). Matching is case-sensitive over
+the entire path using Python `fnmatchcase`: `*` matches any characters, including
+`/`; `?` matches one character, and `[seq]`/`[!seq]` match character sets.
+Use `/` separators without absolute paths or `.`/`..` components; blank lines
+are ignored. Matching files are exempt from home-directory path and local
+task-state reference checks in both their names and added text. Exceptions do
+not exempt attribution, PR titles or commit messages. The CLI accepts the same
+string with `--path-exceptions`.
+
+Each caller owns its exceptions and must document their scope and rationale in
+its CONTRIBUTING or repository-specific MAINTENANCE exceptions, as permitted by
+shared MAINTENANCE. Keep globs limited to the required fixtures or third-party
+text; other files remain checked. For example, a caller with documented synthetic
+path fixtures and bundled upstream examples can add:
+
+```yaml
+    with:
+      declaration-revision: <declaration-sha>
+      path-exceptions: |
+        tests/fixtures/paths/*
+        vendor/upstream/examples.md
+```
 
 Keep policy separate from build/test CI. Title edits rerun policy without
 replacing an existing validation result:

@@ -6,6 +6,10 @@ on:
         description: Full commit SHA of computer-mcp/.github containing MAINTENANCE.md
         type: string
         required: true
+      path-exceptions:
+        description: Newline-separated repository-relative globs for documented path exceptions
+        type: string
+        default: ''
     outputs:
       declaration-revision:
         description: Enforced MAINTENANCE revision
@@ -46,7 +50,9 @@ jobs:
       - name: Check source policy
         env:
           GH_TOKEN: ${{ github.token }}
+          PATH_EXCEPTIONS: ${{ inputs.path-exceptions }}
           DECLARATION_REVISION: ${{ inputs.declaration-revision }}
         run: >-
           python3 -I .shared/scripts/check-policy.py --root member
           --declaration-root declaration --declaration-revision "$DECLARATION_REVISION"
+          --path-exceptions "$PATH_EXCEPTIONS"

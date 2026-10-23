@@ -2,6 +2,7 @@
 """Enforce the source rules from the requested Computer MCP declaration."""
 
 import argparse
+from fnmatch import fnmatchcase
 import json
 import os
 from pathlib import Path
@@ -18,30 +19,46 @@ ZERO = "0" * 40
 PRIVATE_PATH = re.compile(r"/(?:Users|home)/[\w. -]+(?:/|(?=[\s`\"')]|$))|"
                           r"[A-Za-z]:[\\/]Users[\\/][\w. -]+(?:[\\/]|(?=[\s`\"')]|$))")
 TASK_REFERENCE = re.compile(r"(?<![\w.-])[.]agent[/\\][^\s`\"'<>]+")
-TOOLS = re.compile(r"^(?:claude|codex|chatgpt|(?:github )?copilot|cursor|aider|gemini|AI)"
-                   r"(?: (?:code|bot|assistant|agent))?\s*(?:<|$)|<(?:noreply|bot)@(?:anthropic|openai)[.]com>", re.I)
-ATTRIBUTION = re.compile(r"^\s*(?:[#*>/-]+\s*)?(?:[\U0001f300-\U0001faff]\s*)?"
-                         r"(generated[- ](?:by|with):|generated (?:by|with) |"
-                         r"(?:co-authored-by|assisted-by|powered-by|made-with|signed-off-by):)\s*(.*)", re.I | re.M)
+TOOL_IDENTITIES = json.loads((Path(__file__).resolve().parents[1] / "data/attribution-tools.json").read_text())
+TOOL_NAMES = re.compile(r"(?:" + "|".join(re.escape(name) for name in TOOL_IDENTITIES["names"]) +
+                        r")(?=$|\s*[<(\[\]).!,:;\"']|\s+(?:for|with|using|to|on|and)\b)", re.I)
+TOOL_EMAILS = {email.casefold() for email in TOOL_IDENTITIES["emails"]}
+ATTRIBUTION = re.compile(r"\b(?:generated[- ](?:by|with)\s*:?|"
+                         r"(?:co-authored-by|assisted-by|powered-by|made-with|signed-off-by):)[ \t]*", re.I)
+
+
+def tool_identity(value):
+    # Markdown emphasis and links may wrap an attribution's named identity.
+    value = re.sub(r"[`*_]", "", value.strip())
+    value = re.sub(r"\[([^]\n]+)\]\([^\n)]*\)", r"\1", value)
+    name = value.split("<", 1)[0].strip()
+    if re.search(r"[\w-]+\[bot\](?=$|[\s<(.,;])", name, re.I):
+        return True
+    if any(email.casefold() in TOOL_EMAILS for email in re.findall(r"<([^<>\s]+@[^<>\s]+)>", value)):
+        return True
+    return bool(TOOL_NAMES.match(value))
 
 
 def attribution(text):
-    for match in ATTRIBUTION.finditer(text):
-        kind = match[1].lower()
-        # Generation statements identify provenance. Co-authors and sign-offs
-        # identify people too, so only tool/bot identities are rejected there.
-        if (kind.startswith(("generated", "assisted", "powered", "made")) or TOOLS.search(match[2])
-                or (kind.startswith("co-authored") and "[bot]" in match[2].lower())):
-            return True
-    return False
+    return any(tool_identity(text[match.end():].split("\n", 1)[0]) for match in ATTRIBUTION.finditer(text))
 
 
-def content_findings(label, text, *, path=False):
+def parse_path_exceptions(value):
+    patterns = tuple(line.strip() for line in value.splitlines() if line.strip())
+    for pattern in patterns:
+        if ("\\" in pattern or ":" in pattern or
+                any(part in {"", ".", ".."} for part in pattern.split("/"))):
+            raise ValueError("path exceptions must be repository-relative globs: " + pattern)
+    return patterns
+
+
+def content_findings(label, text, *, path=False, exempt_paths=False):
     findings = []
-    if PRIVATE_PATH.search(text):
-        findings.append(f"{label}: private machine path")
-    if TASK_REFERENCE.search(text) or (path and ".agent" in Path(text).parts):
-        findings.append(f"{label}: reference to local task state")
+    if not exempt_paths:
+        if PRIVATE_PATH.search(text):
+            findings.append(f"{label}: private machine path")
+        if TASK_REFERENCE.search(text) or (path and ".agent" in Path(text).parts):
+            findings.append(f"{label}: reference to local task state")
     if attribution(text):
         findings.append(f"{label}: tool or agent attribution")
     return findings
@@ -88,20 +105,20 @@ def sha(value):
     return value
 
 
-def added_findings(patch, path):
+def added_findings(patch, path, *, exempt_paths=False):
     findings, number = [], None
     for line in patch.split("\n"):
         if match := re.match(r"^@@ -\d+(?:,\d+)? \+(\d+)(?:,\d+)? @@", line):
             number = int(match[1])
         elif number is not None and line.startswith("+"):
-            findings += content_findings(f"{path}:{number}", line[1:])
+            findings += content_findings(f"{path}:{number}", line[1:], exempt_paths=exempt_paths)
             number += 1
         elif number is not None and line.startswith(" "):
             number += 1
     return findings
 
 
-def check(root, event, event_name, policy, api):
+def check(root, event, event_name, policy, api, *, path_exceptions=()):
     findings = []
     default_push = False
     if event_name == "pull_request":
@@ -142,7 +159,8 @@ def check(root, event, event_name, policy, api):
                 findings += commit_findings(commit, api.get(f"repos/{repository}/commits/{commit}"), policy)
     paths = git(root, "diff", "--name-only", "--no-renames", "--diff-filter=ACMT", "-z", comparison, head, "--").split("\0")
     for path in filter(None, paths):
-        findings += content_findings(path, path, path=True)
+        exempt_paths = any(fnmatchcase(path, pattern) for pattern in path_exceptions)
+        findings += content_findings(path, path, path=True, exempt_paths=exempt_paths)
         if git(root, "--literal-pathspecs", "ls-tree", head, "--", path).startswith("160000 "):
             continue
         blob = git(root, "cat-file", "blob", head + ":" + path, binary=True)
@@ -150,7 +168,7 @@ def check(root, event, event_name, policy, api):
             continue
         patch = git(root, "--literal-pathspecs", "diff", "--text", "--no-ext-diff", "--no-textconv", "--no-color",
                     "--no-renames", "--unified=0", comparison, head, "--", path)
-        findings += added_findings(patch, path)
+        findings += added_findings(patch, path, exempt_paths=exempt_paths)
     return findings
 
 
@@ -161,15 +179,18 @@ def main(argv=None):
     parser.add_argument("--declaration-revision", required=True)
     parser.add_argument("--event", type=Path, default=os.environ.get("GITHUB_EVENT_PATH"))
     parser.add_argument("--event-name", default=os.environ.get("GITHUB_EVENT_NAME"))
+    parser.add_argument("--path-exceptions", default="", help="Newline-separated repository-relative globs for path exceptions")
     parser.add_argument("--fixture", type=Path, help="Use offline GET responses and a fixture declaration")
     args = parser.parse_args(argv)
     try:
+        path_exceptions = parse_path_exceptions(args.path_exceptions)
         text = declaration.revision(args.declaration_root, args.declaration_revision, offline=bool(args.fixture))
         policy = declaration.source_policy(text)
         if not args.event:
             raise ValueError("event file is required")
         api = Fixture(args.fixture) if args.fixture else GitHub()
-        findings = check(args.root, json.loads(Path(args.event).read_text()), args.event_name, policy, api)
+        findings = check(args.root, json.loads(Path(args.event).read_text()), args.event_name, policy, api,
+                         path_exceptions=path_exceptions)
         for finding in findings:
             print("FAIL " + " ".join(finding.splitlines()))
         if not findings:
