@@ -20,10 +20,16 @@ PRIVATE_PATH = re.compile(r"/(?:Users|home)/[\w. -]+(?:/|(?=[\s`\"')]|$))|"
                           r"[A-Za-z]:[\\/]Users[\\/][\w. -]+(?:[\\/]|(?=[\s`\"')]|$))")
 TASK_REFERENCE = re.compile(r"(?<![\w.-])[.]agent[/\\][^\s`\"'<>]+")
 TOOL_IDENTITIES = json.loads((Path(__file__).resolve().parents[1] / "data/attribution-tools.json").read_text())
-TOOL_NAMES = re.compile(r"(?:" + "|".join(re.escape(name) for name in TOOL_IDENTITIES["names"]) + r")\b", re.I)
+
+
+def inventory_pattern(value, separator=r"[ \t]+"):
+    return separator.join(re.escape(part) for part in re.split(r"[ \t]+", value))
+
+
+TOOL_NAMES = re.compile(r"(?:" + "|".join(inventory_pattern(name) for name in TOOL_IDENTITIES["names"]) + r")\b", re.I)
 TOOL_EMAILS = {email.casefold() for email in TOOL_IDENTITIES["emails"]}
 ATTRIBUTION = re.compile(
-    r"(?:\b(?:" + "|".join(re.escape(phrase).replace(r"\ ", "[- ]")
+    r"(?:\b(?:" + "|".join(inventory_pattern(phrase, r"(?:[ \t]+|-)")
                              for phrase in TOOL_IDENTITIES["phrases"]) +
     r")\b[ \t]*:?|" + "|".join(re.escape(prefix) for prefix in TOOL_IDENTITIES["prefixes"]) + r")[ \t]*",
     re.I,
