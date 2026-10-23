@@ -33,7 +33,7 @@ jobs:
     with:
       ref: ${{ inputs.ref }}
       publish: ${{ inputs.publish }}
-      build: python3 scripts/build_package.py
+      build: python3 scripts/build-package.py
       ci_artifact: <exact-ci-artifact-name-with-${commit}>
   notify-catalog:
     needs: release
@@ -57,8 +57,8 @@ secret inputs. The caller grants the permission ceiling needed by these jobs:
 
 The build job receives no secrets, does not persist checkout credentials and
 has no access to the verification runner's files or job outputs. Only its
-archive artifact ID crosses into verification. Verification and publication execute only the helper from their own workflow
-revision. Their checkouts contain shared automation; caller source is read as data.
+archive artifact ID crosses into verification. Verification and publication
+execute only the helper from their own workflow revision. Their checkouts contain shared automation; caller source is read as data.
 
 Plugin repositories must enable GitHub release immutability in their repository
 settings before publishing. The helper checks `/repos/{owner}/{repo}/immutable-releases`
@@ -85,10 +85,11 @@ change it or report it as published.
 | `release_id` | Published GitHub Release ID, empty for a dry run |
 | `tag` | Verified version tag, empty for an untagged commit dry run |
 
-The release workflow must be pinned by its full commit SHA. Each trusted job checks out `job.workflow_repository` at `job.workflow_sha`.
+The release workflow must be pinned by its full commit SHA. Each trusted job
+checks out `job.workflow_repository` at `job.workflow_sha`.
 The source job checks `job.workflow_ref` is a full SHA pin and records it in
-the receipt provenance. An embedded SHA-256 checks the helper both
-before verification and before publication; caller code cannot supply an
+the receipt provenance. An embedded SHA-256 checks the helper before source
+resolution, verification and publication; caller code cannot supply an
 executable publisher. Verification passes the uploaded bundle's exact artifact
 ID and a SHA-256 map for all release files through job outputs. Publication
 recomputes and compares every file digest, validates the receipt and checks
@@ -156,12 +157,17 @@ repository setting is enabled. It rejects mutations of immutable releases,
 including visibility changes between draft prechecks and mutation requests.
 
 When changing the helper, update `PLUGIN_RELEASE_SHA256` in the workflow to its
-SHA-256. The repository CI runs the offline suite and verifies that digest:
+SHA-256. After the root README's environment setup, the repository CI commands
+run the offline suite and verify that digest:
 
 ```sh
-python3 -m unittest discover -s tests
-actionlint .github/workflows/*.yml
+.build/venv/bin/python -m unittest discover -s tests
+.build/venv/bin/python scripts/check-workflows.py
 ```
 
 Release jobs have no shared concurrency group or caches. Callers must preserve
 running and queued publications; coordinate simultaneous dispatches for a tag.
+
+Frozen receipts from the original organization workflow remain valid provenance.
+Recovery preserves their original workflow identity and bytes; newly assembled
+receipts record this repository.

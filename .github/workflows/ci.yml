@@ -1,0 +1,40 @@
+name: CI
+on:
+  push:
+    branches: [master]
+  pull_request:
+    types: [opened, synchronize, reopened]
+  merge_group:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.13'
+      - name: Install YAML validator
+        run: |
+          python3 -m venv .build/venv
+          .build/venv/bin/python -m pip install --disable-pip-version-check --no-cache-dir -r requirements-test.txt
+      - name: Test scripts and workflow contracts
+        run: |
+          .build/venv/bin/python -m unittest discover -s tests
+          .build/venv/bin/python scripts/check-workflows.py
+          .build/venv/bin/python scripts/plugin-runtime.py check-workflow
+          git diff --exit-code
+  validate:
+    if: always()
+    needs: tests
+    uses: ./.github/workflows/result.yml
+    with:
+      needs-json: ${{ toJSON(needs) }}

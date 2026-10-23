@@ -62,10 +62,10 @@ pull request, with its own adapter tests passing.
 
 After changing the canonical file, update `PLUGIN_RUNTIME_SHA256` in
 `.github/workflows/plugin-runtime.yml` to its SHA-256. Check the tools and
-embedded digest:
+embedded digest after the root README's environment setup:
 
 ```sh
-python3 -m unittest discover -s tests
+.build/venv/bin/python -m unittest discover -s tests
 python3 scripts/plugin-runtime.py check-workflow
 ```
 
