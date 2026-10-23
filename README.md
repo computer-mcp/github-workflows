@@ -1,10 +1,46 @@
-# Computer MCP shared workflows
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset=".github/assets/logo/logo-dark.png">
+    <img src=".github/assets/logo/logo-light.png" width="128" height="128" alt="">
+  </picture>
+</p>
 
-Reusable GitHub Actions, plugin automation and organization checks for Computer MCP.
-The organization's [MAINTENANCE](https://github.com/computer-mcp/.github/blob/master/MAINTENANCE.md)
-owns the rules; this repository implements them. Organization and source checks
-read the caller's full `.github` commit SHA and report that revision. Missing or
-unsupported declarations fail explicitly.
+<h1 align="center">Shared Workflows</h1>
+
+<p align="center">Reusable workflows and checks for Computer MCP repositories: source policy, the organization check, the shared plugin runtime and plugin releases.</p>
+
+<p align="center">
+  <a href="https://github.com/computer-mcp/github-workflows/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/computer-mcp/github-workflows/ci.yml?branch=master&label=CI&style=flat"></a>
+  <a href="LICENSE"><img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-blue?style=flat"></a>
+</p>
+
+<p align="center">
+  <a href="#workflows-and-actions">Workflows</a> ·
+  <a href="#pins-and-versions">Pins</a> ·
+  <a href="#organization-check">Organization check</a> ·
+  <a href="#source-policy">Source policy</a> ·
+  <a href="docs/adoption.md">Adoption</a>
+</p>
+
+## Overview
+
+Every Computer MCP repository calls these workflows instead of keeping its own copy. The
+organization's [MAINTENANCE](https://github.com/computer-mcp/.github/blob/master/MAINTENANCE.md)
+owns the rules; this repository implements them. Organization and source checks read the
+caller's full `.github` commit SHA and report that revision. Missing or unsupported
+declarations fail explicitly.
+
+## Quick look
+
+A member's source policy caller, pinned to a reviewed commit of this repository and of the rules:
+
+```yaml
+jobs:
+  policy:
+    uses: computer-mcp/github-workflows/.github/workflows/policy.yml@<workflow-sha>
+    with:
+      declaration-revision: <declaration-sha>
+```
 
 ## Workflows and actions
 
