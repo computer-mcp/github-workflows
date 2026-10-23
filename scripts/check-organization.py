@@ -75,11 +75,11 @@ def main(argv=None):
             raise ValueError("offline mode requires --fixture; online mode does not accept fixtures")
         text = declaration.revision(args.declaration_root, args.declaration_revision, offline=args.mode == "offline")
         entries = read_catalog(args.declaration_root, args.organization, None if args.mode == "offline" else args.declaration_revision)
-        expected = declaration.settings_policy(text)
         api = Fixture(args.fixture) if args.fixture else GitHub()
         repositories = api.collection(f"orgs/{args.organization}/repos?type=all")
         findings = membership(entries, repositories)
         if args.scope == "full":
+            expected = declaration.settings_policy(text)
             findings += settings.check(api, args.organization, expected, repositories)
         for finding in findings:
             print(" ".join(finding.splitlines()))

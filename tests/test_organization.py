@@ -56,6 +56,21 @@ class OrganizationTests(unittest.TestCase):
         self.assertIn("PASS organization membership and About", output.getvalue())
         self.assertNotIn("declared settings", output.getvalue())
 
+    def test_membership_accepts_declaration_without_settings_but_full_rejects_it(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "MAINTENANCE.md").write_text("# Maintenance\n")
+            (root / "profile").mkdir()
+            (root / "profile/catalog.json").write_bytes((STANDARD / "profile/catalog.json").read_bytes())
+            args = ["--mode", "offline", "--declaration-root", directory,
+                    "--declaration-revision", REVISION, "--fixture", str(FIXTURE)]
+            with redirect_stdout(io.StringIO()), patch.object(declaration, "settings_policy",
+                    side_effect=AssertionError("settings parsed")):
+                self.assertEqual(organization.main(args + ["--scope", "membership"]), 0)
+            with redirect_stdout(io.StringIO()) as output:
+                self.assertEqual(organization.main(args + ["--scope", "full"]), 1)
+            self.assertIn("FAIL organization", output.getvalue())
+
     def test_online_missing_catalog_fails_clearly_before_api(self):
         with tempfile.TemporaryDirectory() as directory:
             Path(directory, "MAINTENANCE.md").write_text((STANDARD / "MAINTENANCE.md").read_text())
