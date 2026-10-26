@@ -19,6 +19,11 @@ ZERO = "0" * 40
 PRIVATE_PATH = re.compile(r"/(?:Users|home)/[\w. -]+(?:/|(?=[\s`\"')]|$))|"
                           r"[A-Za-z]:[\\/]Users[\\/][\w. -]+(?:[\\/]|(?=[\s`\"')]|$))")
 TASK_REFERENCE = re.compile(r"(?<![\w.-])[.]agent[/\\][^\s`\"'<>]+")
+# The agents CLI's instruction units, declaration and lock are tracked repository
+# guidance, and a pattern for the whole directory names no task file; everything
+# else under .agent/ is local task state.
+AGENT_GUIDANCE = {".agent/agents.json", ".agent/agents.resolved", ".agent/*", ".agent/**"}
+AGENT_INSTRUCTIONS = ".agent/instructions/"
 TOOL_IDENTITIES = json.loads((Path(__file__).resolve().parents[1] / "data/attribution-tools.json").read_text())
 
 
@@ -66,12 +71,26 @@ def parse_path_exceptions(value):
     return patterns
 
 
+def task_state(reference):
+    reference = reference.replace("\\", "/")
+    if ".." in reference.split("/"):
+        return True
+    reference = reference.rstrip(".,;:)]")
+    return reference not in AGENT_GUIDANCE and not reference.startswith(AGENT_INSTRUCTIONS)
+
+
+def task_reference(text, *, path=False):
+    if path and ".agent" in Path(text).parts:
+        return task_state(text)
+    return any(task_state(match.group()) for match in TASK_REFERENCE.finditer(text))
+
+
 def content_findings(label, text, *, path=False, exempt_paths=False):
     findings = []
     if not exempt_paths:
         if PRIVATE_PATH.search(text):
             findings.append(f"{label}: private machine path")
-        if TASK_REFERENCE.search(text) or (path and ".agent" in Path(text).parts):
+        if task_reference(text, path=path):
             findings.append(f"{label}: reference to local task state")
     if attribution(text):
         findings.append(f"{label}: tool or agent attribution")
