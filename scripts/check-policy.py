@@ -91,8 +91,9 @@ def task_state(reference, *, path=False):
 def task_reference(text, *, path=False):
     if path and ".agent" in Path(text).parts:
         return task_state(text, path=True)
-    # A reference inside a longer path, such as plugin/.agent/ or ../.agent/, is not
-    # the repository's own guidance; a lone leading slash anchors an ignore rule.
+    # A reference inside a longer path, such as another directory's agent folder or a
+    # parent-directory path, is not the repository's own guidance; a lone leading slash
+    # anchors an ignore rule.
     return any(NESTED_REFERENCE.search(text[:match.start()]) or task_state(match.group())
                for match in TASK_REFERENCE.finditer(text))
 

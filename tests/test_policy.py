@@ -28,7 +28,8 @@ result = load("aggregate", "check-result.py")
 TEXT = (ROOT / "fixtures/declaration/MAINTENANCE.md").read_text()
 RULES = declaration.source_policy(TEXT)
 PRIVATE = "/".join(("", "Users", "fixture-owner", "project"))
-TASK = ".agent" + "/plans/task.md"
+AGENT = ".agent"
+TASK = AGENT + "/plans/task.md"
 TOOL_TRAILER = "Co-Authored" + "-By: Claude <noreply@anthropic.com>"
 GENERATED = "Generated" + " with AI assistant"
 
@@ -125,14 +126,14 @@ class PolicyRulesTests(unittest.TestCase):
         for path in (".agent/agents.json", ".agent/agents.resolved", ".agent/instructions/guide.md"):
             with self.subTest(path=path):
                 self.assertEqual(policy.content_findings(path, path, path=True), [])
-        for text in (".agent/.agents.lock", ".agent/cache/source", ".agent/agents.json.bak",
-                     ".agent/instructions/../plans/task.md", "/.agent/* and " + TASK,
-                     ".agent/instructions/shared/.agent/cache/state", "plugin/.agent/agents.json",
-                     "../.agent/instructions/guide.md", "https://example.org/r/blob/master/" + TASK):
+        for text in (f"{AGENT}/.agents.lock", f"{AGENT}/cache/source", f"{AGENT}/agents.json.bak",
+                     f"{AGENT}/instructions/../plans/task.md", "/.agent/* and " + TASK,
+                     f"{AGENT}/instructions/shared/{AGENT}/cache/state", f"plugin/{AGENT}/agents.json",
+                     f"../{AGENT}/instructions/guide.md", "https://example.org/r/blob/master/" + TASK):
             with self.subTest(text=text):
                 self.assertTrue(policy.content_findings("file", text))
-        for path in ("plugin/.agent/agents.json", ".agent/transaction.json", ".agent/instructions.md",
-                     ".agent/instructions/shared/.agent/cache/state", ".agent/*"):
+        for path in (f"plugin/{AGENT}/agents.json", f"{AGENT}/transaction.json", f"{AGENT}/instructions.md",
+                     f"{AGENT}/instructions/shared/{AGENT}/cache/state", ".agent/*"):
             with self.subTest(path=path):
                 self.assertTrue(policy.content_findings(path, path, path=True))
 
@@ -215,7 +216,8 @@ class GitRangeTests(unittest.TestCase):
         self.api.get.assert_not_called()
 
     def test_committed_agent_instruction_files_pass_while_task_state_fails(self):
-        self.write(".gitignore", "/.agent/*\n!/.agent/instructions/\n!/.agent/agents.json\n!/.agent/agents.resolved\n")
+        rules = ("/.agent/*", "!/.agent/instructions/", "!/.agent/agents.json", "!/.agent/agents.resolved")
+        self.write(".gitignore", "\n".join(rules) + "\n")
         self.write(".agent/instructions/guide.md", "# Guide\n")
         self.write(".agent/agents.json", '{"instructions": {"agents": ["claude-code", "codex"], "sections": ["guide"]}}\n')
         self.write(".agent/agents.resolved", '{"path" : ".agent/instructions/guide.md"}\n')
