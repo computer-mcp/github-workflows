@@ -19,11 +19,13 @@ ZERO = "0" * 40
 PRIVATE_PATH = re.compile(r"/(?:Users|home)/[\w. -]+(?:/|(?=[\s`\"')]|$))|"
                           r"[A-Za-z]:[\\/]Users[\\/][\w. -]+(?:[\\/]|(?=[\s`\"')]|$))")
 TASK_REFERENCE = re.compile(r"(?<![\w.-])[.]agent[/\\][^\s`\"'<>]+")
-# The agents CLI's instruction units, declaration and lock are tracked repository
-# guidance, and a pattern for the whole directory names no task file; everything
-# else under .agent/ is local task state.
-AGENT_GUIDANCE = {".agent/agents.json", ".agent/agents.resolved", ".agent/*", ".agent/**"}
+# The agents CLI's instruction units, declaration and lock at the repository root
+# are tracked repository guidance; everything else under .agent/ is local task state.
+AGENT_FILES = {".agent/agents.json", ".agent/agents.resolved"}
 AGENT_INSTRUCTIONS = ".agent/instructions/"
+# Ignore rules for the whole directory name no task file.
+AGENT_PATTERNS = {".agent/*", ".agent/**"}
+NESTED_REFERENCE = re.compile(r"[\w.:/\\-][/\\]$")
 TOOL_IDENTITIES = json.loads((Path(__file__).resolve().parents[1] / "data/attribution-tools.json").read_text())
 
 
@@ -71,18 +73,28 @@ def parse_path_exceptions(value):
     return patterns
 
 
-def task_state(reference):
+def task_state(reference, *, path=False):
     reference = reference.replace("\\", "/")
     if ".." in reference.split("/"):
         return True
-    reference = reference.rstrip(".,;:)]")
-    return reference not in AGENT_GUIDANCE and not reference.startswith(AGENT_INSTRUCTIONS)
+    if not path:
+        reference = reference.rstrip(".,;:)]")
+        if reference in AGENT_PATTERNS:
+            return False
+    if reference in AGENT_FILES:
+        return False
+    if reference.startswith(AGENT_INSTRUCTIONS):
+        return ".agent" in reference[len(AGENT_INSTRUCTIONS):].split("/")
+    return True
 
 
 def task_reference(text, *, path=False):
     if path and ".agent" in Path(text).parts:
-        return task_state(text)
-    return any(task_state(match.group()) for match in TASK_REFERENCE.finditer(text))
+        return task_state(text, path=True)
+    # A reference inside a longer path, such as plugin/.agent/ or ../.agent/, is not
+    # the repository's own guidance; a lone leading slash anchors an ignore rule.
+    return any(NESTED_REFERENCE.search(text[:match.start()]) or task_state(match.group())
+               for match in TASK_REFERENCE.finditer(text))
 
 
 def content_findings(label, text, *, path=False, exempt_paths=False):

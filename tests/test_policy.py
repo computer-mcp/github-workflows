@@ -118,18 +118,21 @@ class PolicyRulesTests(unittest.TestCase):
     def test_agent_instruction_files_are_repository_guidance(self):
         for text in (".agent/agents.json", ".agent/agents.resolved", ".agent/instructions/guide.md",
                      ".agent/instructions/shared/plugin-rules.md", "`.agent/instructions/shared/`",
-                     "/.agent/*", "!/.agent/instructions/", '"path" : ".agent/instructions/guide.md",',
-                     "Edit .agent/agents.json."):
+                     "/.agent/*", "`/.agent/*`", "!/.agent/instructions/",
+                     '"path" : ".agent/instructions/guide.md",', "Edit .agent/agents.json."):
             with self.subTest(text=text):
                 self.assertEqual(policy.content_findings("file", text), [])
         for path in (".agent/agents.json", ".agent/agents.resolved", ".agent/instructions/guide.md"):
             with self.subTest(path=path):
                 self.assertEqual(policy.content_findings(path, path, path=True), [])
         for text in (".agent/.agents.lock", ".agent/cache/source", ".agent/agents.json.bak",
-                     ".agent/instructions/../plans/task.md", "/.agent/* and " + TASK):
+                     ".agent/instructions/../plans/task.md", "/.agent/* and " + TASK,
+                     ".agent/instructions/shared/.agent/cache/state", "plugin/.agent/agents.json",
+                     "../.agent/instructions/guide.md", "https://example.org/r/blob/master/" + TASK):
             with self.subTest(text=text):
                 self.assertTrue(policy.content_findings("file", text))
-        for path in ("plugin/.agent/agents.json", ".agent/transaction.json", ".agent/instructions.md"):
+        for path in ("plugin/.agent/agents.json", ".agent/transaction.json", ".agent/instructions.md",
+                     ".agent/instructions/shared/.agent/cache/state", ".agent/*"):
             with self.subTest(path=path):
                 self.assertTrue(policy.content_findings(path, path, path=True))
 
