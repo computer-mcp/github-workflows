@@ -21,7 +21,7 @@ PRIVATE_PATH = re.compile(r"/(?:Users|home)/[\w. -]+(?:/|(?=[\s`\"')]|$))|"
 TASK_REFERENCE = re.compile(r"(?<![\w.-])[.]agent[/\\][^\s`\"'<>]+")
 # The agents CLI's instruction units, declaration and lock at the repository root
 # are tracked repository guidance; everything else under .agent/ is local task state.
-AGENT_FILES = {".agent/agents.json", ".agent/agents.resolved"}
+AGENT_FILES = {".agent/Agents.swift", ".agent/agents.resolved"}
 AGENT_INSTRUCTIONS = ".agent/instructions/"
 # Ignore rules for the whole directory name no task file.
 AGENT_PATTERNS = {".agent/*", ".agent/**"}

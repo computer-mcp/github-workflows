@@ -171,7 +171,7 @@ and [Signing](https://github.com/computer-mcp/.github/blob/master/MAINTENANCE.md
 | PR titles, added content and added/modified paths; verified default-branch commits | PR diffs use the merge base; pushes check their supplied range; removed lines are outside the added-content check |
 
 Local task state is any path under `.agent/` except the agents CLI's tracked
-instruction units in `.agent/instructions/`, its `.agent/agents.json`
+instruction units in `.agent/instructions/`, its `.agent/Agents.swift`
 declaration and its `.agent/agents.resolved` lock at the repository root. An
 `.agent/` directory nested under the units or elsewhere remains task state;
 references to the whole root directory, such as an ignore rule for `.agent/*`,
