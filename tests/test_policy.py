@@ -118,22 +118,22 @@ class PolicyRulesTests(unittest.TestCase):
             self.assertEqual(policy.content_findings("file", text, path=True), [])
 
     def test_agent_instruction_files_are_repository_guidance(self):
-        for text in (".agent/Agents.swift", ".agent/agents.resolved", ".agent/instructions/guide.md",
+        for text in (".agent/agents.yaml", ".agent/agents.resolved", ".agent/instructions/guide.md",
                      ".agent/instructions/shared/plugin-rules.md", "`.agent/instructions/shared/`",
                      "/.agent/*", "`/.agent/*`", "!/.agent/instructions/",
-                     '"path" : ".agent/instructions/guide.md",', "Edit .agent/Agents.swift."):
+                     '"path" : ".agent/instructions/guide.md",', "Edit .agent/agents.yaml."):
             with self.subTest(text=text):
                 self.assertEqual(policy.content_findings("file", text), [])
-        for path in (".agent/Agents.swift", ".agent/agents.resolved", ".agent/instructions/guide.md"):
+        for path in (".agent/agents.yaml", ".agent/agents.resolved", ".agent/instructions/guide.md"):
             with self.subTest(path=path):
                 self.assertEqual(policy.content_findings(path, path, path=True), [])
-        for text in (f"{AGENT}/.agents.lock", f"{AGENT}/cache/source", f"{AGENT}/Agents.swift.bak",
+        for text in (f"{AGENT}/.agents.lock", f"{AGENT}/cache/source", f"{AGENT}/agents.yaml.bak",
                      f"{AGENT}/instructions/../plans/task.md", "/.agent/* and " + TASK,
-                     f"{AGENT}/instructions/shared/{AGENT}/cache/state", f"plugin/{AGENT}/Agents.swift",
+                     f"{AGENT}/instructions/shared/{AGENT}/cache/state", f"plugin/{AGENT}/agents.yaml",
                      f"../{AGENT}/instructions/guide.md", "https://example.org/r/blob/master/" + TASK):
             with self.subTest(text=text):
                 self.assertTrue(policy.content_findings("file", text))
-        for path in (f"plugin/{AGENT}/Agents.swift", f"{AGENT}/transaction.json", f"{AGENT}/instructions.md",
+        for path in (f"plugin/{AGENT}/agents.yaml", f"{AGENT}/transaction.json", f"{AGENT}/instructions.md",
                      f"{AGENT}/instructions/shared/{AGENT}/cache/state", ".agent/*"):
             with self.subTest(path=path):
                 self.assertTrue(policy.content_findings(path, path, path=True))
@@ -223,18 +223,16 @@ class GitRangeTests(unittest.TestCase):
         self.api.get.assert_not_called()
 
     def test_committed_agent_instruction_files_pass_while_task_state_fails(self):
-        rules = ("/.agent/*", "!/.agent/instructions/", "!/.agent/Agents.swift", "!/.agent/agents.resolved")
+        rules = ("/.agent/*", "!/.agent/instructions/", "!/.agent/agents.yaml", "!/.agent/agents.resolved")
         self.write(".gitignore", "\n".join(rules) + "\n")
         self.write(".agent/instructions/guide.md", "# Guide\n")
-        self.write(".agent/Agents.swift",
-            '// agents-tools-version: 1.0\n'
-            'import AgentsDescription\n'
-            '\n'
-            'let agents = Agents(\n'
-            '  components: [\n'
-            '    .instructions(sections: ["guide"], agents: [.claudeCode, .codex, .cursor]),\n'
-            '  ]\n'
-            ')\n'
+        self.write(".agent/agents.yaml",
+            'version: 1\n'
+            'components:\n'
+            '  - kind: instructions\n'
+            '    sections:\n'
+            '      - name: guide\n'
+            '    agents: [claude-code, codex, cursor]\n'
         )
         self.write(".agent/agents.resolved", '{"path" : ".agent/instructions/guide.md"}\n')
         head = self.commit("docs: generate AGENTS.md from instruction units")
